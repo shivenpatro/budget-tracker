@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Dashboard from './components/layouts/Dashboard'
 import BudgetOverview from './components/budget/BudgetOverview'
 import Analytics from './components/budget/Analytics'
 import Goals from './components/budget/Goals'
+import Login from './components/auth/Login'
 import { exportToPdf, exportToCSV } from './utils/exportToPdf'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
+
+// Protected Route wrapper component
+const ProtectedRoute = ({ children }) => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 const AppContent = () => {
   const location = useLocation();
@@ -46,61 +56,80 @@ const AppContent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Dashboard 
-        theme={darkMode ? 'dark' : 'light'} 
-        toggleTheme={toggleDarkMode}
-        onExport={handleExport}
-      >
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route
-              path="/"
-              element={
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard 
+                  theme={darkMode ? 'dark' : 'light'} 
+                  toggleTheme={toggleDarkMode}
+                  onExport={handleExport}
                 >
-                  <BudgetOverview 
-                    transactions={transactions}
-                    monthlyBudget={monthlyBudget}
-                    onBudgetChange={setMonthlyBudget}
-                    onAddTransaction={handleAddTransaction}
-                    onDeleteTransaction={handleDeleteTransaction}
-                  />
-                </motion.div>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <BudgetOverview 
+                      transactions={transactions}
+                      monthlyBudget={monthlyBudget}
+                      onBudgetChange={setMonthlyBudget}
+                      onAddTransaction={handleAddTransaction}
+                      onDeleteTransaction={handleDeleteTransaction}
+                    />
+                  </motion.div>
+                </Dashboard>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Dashboard 
+                  theme={darkMode ? 'dark' : 'light'} 
+                  toggleTheme={toggleDarkMode}
+                  onExport={handleExport}
                 >
-                  <Analytics transactions={transactions} />
-                </motion.div>
-              }
-            />
-            <Route
-              path="/goals"
-              element={
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Analytics transactions={transactions} />
+                  </motion.div>
+                </Dashboard>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/goals"
+            element={
+              <ProtectedRoute>
+                <Dashboard 
+                  theme={darkMode ? 'dark' : 'light'} 
+                  toggleTheme={toggleDarkMode}
+                  onExport={handleExport}
                 >
-                  <Goals transactions={transactions} />
-                </motion.div>
-              }
-            />
-          </Routes>
-        </AnimatePresence>
-      </Dashboard>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Goals transactions={transactions} />
+                  </motion.div>
+                </Dashboard>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
     </div>
   );
 };

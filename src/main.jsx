@@ -21,7 +21,7 @@ const AppWithTransition = () => (
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/budget-tracker">
       <AppWithTransition />
     </BrowserRouter>
   </StrictMode>
