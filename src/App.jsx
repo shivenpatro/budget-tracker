@@ -9,18 +9,12 @@ import Login from './components/auth/Login'
 import { exportToPdf, exportToCSV } from './utils/exportToPdf'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 
-// Protected Route wrapper component
-const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
-
 const AppContent = () => {
   const location = useLocation();
   const { darkMode, toggleDarkMode } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem('isLoggedIn') === 'true'
+  );
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('transactions')
     return saved ? JSON.parse(saved) : []
@@ -58,11 +52,32 @@ const AppContent = () => {
     <div className="min-h-screen bg-background">
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/login" element={<Login />} />
           <Route
             path="/"
             element={
-              <ProtectedRoute>
+              isAuthenticated ? (
+                <Navigate to="/overview" replace />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route 
+            path="/login" 
+            element={
+              isAuthenticated ? (
+                <Navigate to="/overview" replace />
+              ) : (
+                <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+              )
+            } 
+          />
+          <Route
+            path="/overview"
+            element={
+              !isAuthenticated ? (
+                <Navigate to="/login" replace />
+              ) : (
                 <Dashboard 
                   theme={darkMode ? 'dark' : 'light'} 
                   toggleTheme={toggleDarkMode}
@@ -83,13 +98,15 @@ const AppContent = () => {
                     />
                   </motion.div>
                 </Dashboard>
-              </ProtectedRoute>
+              )
             }
           />
           <Route
             path="/analytics"
             element={
-              <ProtectedRoute>
+              !isAuthenticated ? (
+                <Navigate to="/login" replace />
+              ) : (
                 <Dashboard 
                   theme={darkMode ? 'dark' : 'light'} 
                   toggleTheme={toggleDarkMode}
@@ -104,13 +121,15 @@ const AppContent = () => {
                     <Analytics transactions={transactions} />
                   </motion.div>
                 </Dashboard>
-              </ProtectedRoute>
+              )
             }
           />
           <Route
             path="/goals"
             element={
-              <ProtectedRoute>
+              !isAuthenticated ? (
+                <Navigate to="/login" replace />
+              ) : (
                 <Dashboard 
                   theme={darkMode ? 'dark' : 'light'} 
                   toggleTheme={toggleDarkMode}
@@ -125,7 +144,7 @@ const AppContent = () => {
                     <Goals transactions={transactions} />
                   </motion.div>
                 </Dashboard>
-              </ProtectedRoute>
+              )
             }
           />
         </Routes>

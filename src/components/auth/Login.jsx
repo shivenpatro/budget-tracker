@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
@@ -32,12 +32,14 @@ const Login = () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    // Simulate API call
+    
+    // For demo purposes, accept any valid input
     setTimeout(() => {
       localStorage.setItem('isLoggedIn', 'true');
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1500);
+      onLoginSuccess(); // Update parent component's auth state
+      navigate('/overview');
+    }, 1000);
   };
 
   const handleChange = (e) => {
@@ -46,7 +48,6 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -63,7 +64,7 @@ const Login = () => {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="bg-card rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+        <div className="bg-card rounded-lg shadow-lg border border-border p-8">
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
@@ -88,7 +89,7 @@ const Login = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 rounded-md border ${
-                  errors.username ? 'border-destructive' : 'border-slate-200 dark:border-slate-700'
+                  errors.username ? 'border-destructive' : 'border-border'
                 } bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors`}
                 placeholder="Enter your username"
               />
@@ -115,7 +116,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className={`w-full px-3 py-2 rounded-md border ${
-                    errors.password ? 'border-destructive' : 'border-slate-200 dark:border-slate-700'
+                    errors.password ? 'border-destructive' : 'border-border'
                   } bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors`}
                   placeholder="Enter your password"
                 />
@@ -141,16 +142,17 @@ const Login = () => {
             <motion.button
               type="submit"
               disabled={isLoading}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full py-2.5 px-4 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors ${
-                isLoading ? 'opacity-70 cursor-not-allowed' : ''
-              }`}
+              className={`w-full py-2 px-4 bg-primary text-primary-foreground rounded-md font-medium 
+                ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-primary/90'} 
+                transition-colors flex items-center justify-center`}
             >
               {isLoading ? (
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full mx-auto"
+                  className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"
                 />
               ) : (
                 'Sign In'
