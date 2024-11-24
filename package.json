@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://${YOUR_GITHUB_USERNAME}.github.io/budget-tracker",
+  "homepage": "https://shivenpatro.github.io/budget-tracker",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
