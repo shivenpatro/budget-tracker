@@ -1,4 +1,6 @@
 # Budget Tracker
+![Screenshot 2025-05-16 055649](https://github.com/user-attachments/assets/a748cd05-0c70-4066-88b7-ca3c62c57677)
+![Screenshot 2025-05-16 055659](https://github.com/user-attachments/assets/2306be73-d23e-42ba-b178-b0999dc9c06f)
 
 A modern budget tracking application built with React and Vite. Track your expenses, analyze spending patterns, and manage your financial goals with an intuitive user interface.
 
